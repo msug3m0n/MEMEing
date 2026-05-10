@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "username", "email"]
+    },
+    "Meme": {
+      "title": "Meme",
+      "description": "Meme content and metadata.",
+      "type": "object",
+      "properties": {
+        "memeId": { "type": "string" },
+        "userId": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "caption": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "viralityScore": { "type": "number" },
+        "mood": { "type": "string" },
+        "likesCount": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["memeId", "userId", "imageUrl"]
+    },
+    "Like": {
+      "title": "Like",
+      "description": "User like on a meme.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "memeId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "memeId"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "User comment on a meme.",
+      "type": "object",
+      "properties": {
+        "commentId": { "type": "string" },
+        "memeId": { "type": "string" },
+        "userId": { "type": "string" },
+        "username": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["commentId", "memeId", "userId", "text"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Storage for user profiles."
+    },
+    "/memes/{memeId}": {
+      "schema": "Meme",
+      "description": "Storage for uploaded memes."
+    },
+    "/memes/{memeId}/likes/{userId}": {
+      "schema": "Like",
+      "description": "Track likes for each meme."
+    },
+    "/memes/{memeId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments attached to a meme."
+    }
+  }
+}

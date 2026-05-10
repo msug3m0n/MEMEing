@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bebas Neue", sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-cyan-vivid: #00F5FF;
+  --color-pink-vivid: #FF007A;
+  --color-purple-vivid: #BD00FF;
+  
+  --color-bg-deep: #050505;
+  --color-surface-soft: #0A0A0A;
+  --color-surface-solid: #111111;
+  --color-border-dim: #1A1A1A;
+  --color-text-dim: #888888;
+  --color-text-vivid: #E0E0E0;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-deep text-text-vivid font-sans selection:bg-cyan-vivid selection:text-black;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight text-white uppercase;
+  }
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+.tech-border {
+  @apply border border-border-dim hover:border-cyan-vivid/50 transition-colors;
+}
+
+.tech-panel {
+  @apply bg-surface-soft border border-border-dim;
+}
+
+.progress-bar {
+  @apply h-1 w-full bg-border-dim overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full transition-all duration-1000 ease-out;
+}

@@ -1,0 +1,63 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if isOwner(userId) && 
+        request.resource.data.keys().hasAll(['userId', 'username', 'email', 'createdAt']) &&
+        request.resource.data.userId == request.auth.uid;
+      allow update: if isOwner(userId) && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['username', 'avatarUrl']);
+    }
+
+    // Memes collection
+    match /memes/{memeId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasAll(['memeId', 'userId', 'imageUrl', 'caption', 'createdAt']) &&
+        request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        // Allow updating likesCount via increment (could be more strict with batch/existsAfter)
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likesCount'])
+      );
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      // Likes subcollection
+      match /likes/{userId} {
+        allow get: if true;
+        allow list: if true;
+        allow create, delete: if isOwner(userId);
+      }
+
+      // Comments subcollection
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isSignedIn() && 
+          request.resource.data.keys().hasAll(['commentId', 'memeId', 'userId', 'username', 'avatarUrl', 'text', 'createdAt']) &&
+          request.resource.data.userId == request.auth.uid;
+        allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      }
+    }
+  }
+}
